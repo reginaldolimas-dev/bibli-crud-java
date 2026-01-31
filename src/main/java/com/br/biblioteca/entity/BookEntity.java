@@ -11,8 +11,8 @@ import lombok.Data;
 @Table(name = "books")
 public class BookEntity {
     @Id
-    @Column(name = "id", length = 13, nullable = false)
-    private String id;
+    @Column(name = "isbn", length = 13, nullable = false)
+    private String isbn;
 
     @Column(name = "title", length = 512, nullable = false)
     private String title;
