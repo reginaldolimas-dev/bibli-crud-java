@@ -6,6 +6,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 @Table(name = "books")
@@ -31,4 +33,11 @@ public class BookEntity {
 
     @Column(name = "publisher", columnDefinition = "TEXT")
     private String publisher;
+
+    @Column(name = "inactived_at")
+    private LocalDateTime inactivedAt;
+
+    @Column(name = "active", nullable = false)
+    private Boolean active = true;
+
 }

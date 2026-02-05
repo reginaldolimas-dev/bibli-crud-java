@@ -45,7 +45,9 @@ CREATE TABLE "books" (
                          "summary" text,
                          "author" text NOT NULL,
                          "page_len" int,
-                         "publisher" text
+                         "publisher" text,
+                         "inactived_at" timestamp DEFAULT null,
+                         "active" bool DEFAULT true
 );
 
 CREATE TABLE "genre" (
