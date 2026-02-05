@@ -11,11 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "loans")
 @Data
-public class LoanEntity {
-
-    @Id
-    @Column(name = "id", length = 26, nullable = false)
-    private String id;
+public class LoanEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "portfolio_id", referencedColumnName = "id", nullable = false,

@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -40,4 +41,12 @@ public class UserService {
 		
 		return repository.save(user);
 	}
+
+    public void deletar(String id) {
+        UserEntity user = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+        user.setActive(false);
+        user.setInactivedAt(LocalDateTime.now());
+        repository.save(user);
+    }
 }

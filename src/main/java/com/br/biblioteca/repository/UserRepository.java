@@ -22,6 +22,7 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
 			WHERE (:#{#dto.id} IS NULL OR u.id = :#{#dto.id})
 			AND (:#{#dto.name} IS NULL OR LOWER(u.name) LIKE LOWER(CONCAT('%', :#{#dto.name}, '%')))
 			AND (:#{#dto.email} IS NULL OR LOWER(u.email) = LOWER(:#{#dto.email}))
+			AND u.active = true
 			""")
 	List<UserSummaryDTO> findByResume(UserFilterDTO dto, Pageable pageable);
 	

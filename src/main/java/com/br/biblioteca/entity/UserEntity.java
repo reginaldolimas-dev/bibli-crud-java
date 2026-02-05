@@ -1,5 +1,6 @@
 package com.br.biblioteca.entity;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -12,10 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "users")
 @Data
-public class UserEntity {
-    @Id
-    @Column(name = "id", length = 26, nullable = false)
-    private String id;
+public class UserEntity extends BaseEntity {
 
     @Column(name = "name", length = 256, nullable = false)
     private String name;
