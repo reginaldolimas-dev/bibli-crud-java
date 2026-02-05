@@ -1,28 +1,22 @@
 package com.br.biblioteca.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum ConditionEnum {
-    PERFECT("perfect"),
-    GOOD("good"),
-    BAD("bad"),
-    USELESS("useless"),
-    DISABLE("disable");
+    PERFECT,
+    GOOD,
+    BAD,
+    USELESS,
+    DISABLE;
 
-    private final String value;
-
-    ConditionEnum(String value) {
-        this.value = value;
-    }
-
+    @JsonValue
     public String getValue() {
-        return value;
+        return this.name().toLowerCase();
     }
 
+    @JsonCreator
     public static ConditionEnum fromValue(String value) {
-        for (ConditionEnum condition : ConditionEnum.values()) {
-            if (condition.value.equals(value)) {
-                return condition;
-            }
-        }
-        throw new IllegalArgumentException("Valor inválido para Condition: " + value);
+        return ConditionEnum.valueOf(value.toUpperCase());
     }
 }

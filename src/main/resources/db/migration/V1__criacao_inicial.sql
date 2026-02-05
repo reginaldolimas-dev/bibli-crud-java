@@ -1,32 +1,32 @@
 CREATE SCHEMA IF NOT EXISTS "book";
 
 CREATE TYPE "book"."condition" AS ENUM (
-  'perfect',
-  'good',
-  'bad',
-  'useless',
-  'disable'
+  'PERFECT',
+  'GOOD',
+  'BAD',
+  'USELESS',
+  'DISABLE'
 );
 
 CREATE TYPE "book"."cover" AS ENUM (
-  'paper',
-  'hardcover'
+  'PAPER',
+  'HARDCOVER'
 );
 
 CREATE TYPE "book"."genre" AS ENUM (
-  'adventure',
-  'romance',
-  'fantasy',
-  'sci_fi',
-  'history',
-  'horror',
-  'distopian',
-  'biography',
-  'self_help',
-  'memory',
-  'true_crime',
-  'poetry',
-  'graphic_novel'
+  'ADVENTURE',
+  'ROMANCE',
+  'FANTASY',
+  'SCI_FI',
+  'HISTORY',
+  'HORROR',
+  'DISTOPIAN',
+  'BIOGRAPHY',
+  'SELF_HELP',
+  'MEMORY',
+  'TRUE_CRIME',
+  'POETRY',
+  'GRAPHIC_NOVEL'
 );
 
 CREATE TABLE "users" (
@@ -59,7 +59,9 @@ CREATE TABLE "portfolio" (
                              "id" char(26) PRIMARY KEY,
                              "book_id" char(13) NOT NULL,
                              "condition" book.condition,
-                             "cover" book.cover
+                             "cover" book.cover,
+                             "inactived_at" timestamp DEFAULT null,
+                             "active" bool DEFAULT true
 );
 
 CREATE TABLE "loan" (

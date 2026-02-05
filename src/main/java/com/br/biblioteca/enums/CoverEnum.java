@@ -1,26 +1,21 @@
 package com.br.biblioteca.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum CoverEnum {
-    PAPER("paper"),
-    HARDCOVER("hardcover");
+    PAPER,
+    HARDCOVER;
 
-    private final String value;
 
-    CoverEnum(String value) {
-        this.value = value;
-    }
-
+    @JsonValue
     public String getValue() {
-        return value;
+        return this.name().toLowerCase();
     }
 
+    @JsonCreator
     public static CoverEnum fromValue(String value) {
-        for (CoverEnum cover : CoverEnum.values()) {
-            if (cover.value.equals(value)) {
-                return cover;
-            }
-        }
-        throw new IllegalArgumentException("Valor inválido para Cover: " + value);
+        return CoverEnum.valueOf(value.toUpperCase());
     }
 
 }

@@ -9,7 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "loans")
+@Table(name = "loan")
 @Data
 public class LoanEntity extends BaseEntity {
 
