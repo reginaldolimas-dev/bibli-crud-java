@@ -1,4 +1,4 @@
-package com.br.biblioteca.dto;
+package com.br.biblioteca.dto.user;
 
 import lombok.Value;
 

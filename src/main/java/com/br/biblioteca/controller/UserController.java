@@ -1,10 +1,19 @@
 package com.br.biblioteca.controller;
 
-import com.br.biblioteca.dto.UserFilterDTO;
 import com.br.biblioteca.dto.projection.UserSummaryDTO;
+import com.br.biblioteca.dto.user.UserCreateDTO;
+import com.br.biblioteca.dto.user.UserFilterDTO;
+import com.br.biblioteca.entity.UserEntity;
 import com.br.biblioteca.service.UserService;
 import lombok.AllArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,7 +27,17 @@ public class UserController {
     private final UserService service;
 
     @GetMapping
-    public List<UserSummaryDTO> pesquisarPaginado(UserFilterDTO dto){
-        return service.pesquisarPaginado(dto);
+    public ResponseEntity<Page<UserSummaryDTO>> pesquisarPaginado(UserFilterDTO dto, Pageable pageable){
+        return ResponseEntity.ok(service.pesquisarPaginado(dto, pageable));
     }
+    
+    @PostMapping
+    public ResponseEntity<UserEntity> cadastrar(@RequestBody UserCreateDTO dto) {
+    	return ResponseEntity.status(HttpStatus.CREATED)
+    			.body(service.cadastrar(dto));
+    }
+    
+    
+    
+    
 }
