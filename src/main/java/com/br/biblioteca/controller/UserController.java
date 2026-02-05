@@ -3,11 +3,13 @@ package com.br.biblioteca.controller;
 import com.br.biblioteca.dto.projection.UserSummaryDTO;
 import com.br.biblioteca.dto.user.UserCreateDTO;
 import com.br.biblioteca.dto.user.UserFilterDTO;
+import com.br.biblioteca.dto.user.UserUpdateDTO;
 import com.br.biblioteca.entity.UserEntity;
 import com.br.biblioteca.service.UserService;
 import lombok.AllArgsConstructor;
 
 import org.apache.catalina.User;
+import org.apache.logging.log4j.message.StringFormattedMessage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -32,6 +34,12 @@ public class UserController {
     public ResponseEntity<UserEntity> cadastrar(@RequestBody UserCreateDTO dto) {
     	return ResponseEntity.status(HttpStatus.CREATED)
     			.body(service.cadastrar(dto));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> atualizar(@PathVariable String id, @RequestBody UserUpdateDTO dto) {
+        service.atualizar(id, dto);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")

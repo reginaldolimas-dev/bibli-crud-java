@@ -3,10 +3,11 @@ package com.br.biblioteca.service;
 import com.br.biblioteca.dto.projection.UserSummaryDTO;
 import com.br.biblioteca.dto.user.UserCreateDTO;
 import com.br.biblioteca.dto.user.UserFilterDTO;
+import com.br.biblioteca.dto.user.UserUpdateDTO;
 import com.br.biblioteca.entity.UserEntity;
 import com.br.biblioteca.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -44,9 +45,27 @@ public class UserService {
 
     public void deletar(String id) {
         UserEntity user = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
         user.setActive(false);
         user.setInactivedAt(LocalDateTime.now());
         repository.save(user);
+    }
+
+    public void atualizar(String id, UserUpdateDTO dto) {
+		UserEntity user = repository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+
+		if (!user.getActive()) {
+			throw new IllegalStateException("Usuário inativo não pode ser atualizado");
+		}
+
+		if (dto.getName() != null) {
+			user.setName(dto.getName());
+		}
+
+		if (dto.getEmail() != null) {
+			user.setEmail(dto.getEmail());
+		}
+		repository.save(user);
     }
 }
