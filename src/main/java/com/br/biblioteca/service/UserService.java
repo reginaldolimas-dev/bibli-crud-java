@@ -5,6 +5,7 @@ import com.br.biblioteca.dto.user.UserCreateDTO;
 import com.br.biblioteca.dto.user.UserFilterDTO;
 import com.br.biblioteca.dto.user.UserUpdateDTO;
 import com.br.biblioteca.entity.UserEntity;
+import com.br.biblioteca.exception.BusinessException;
 import com.br.biblioteca.repository.LoanRepository;
 import com.br.biblioteca.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -34,7 +35,7 @@ public class UserService {
 		boolean emailAlreadyExists = repository.existsByEmailIgnoreCase(dto.getEmail());
 		
 		if (emailAlreadyExists) {
-			throw new IllegalArgumentException("Email já cadastrado");
+			throw new IllegalStateException("Email já cadastrado");
 		}
 		
 		

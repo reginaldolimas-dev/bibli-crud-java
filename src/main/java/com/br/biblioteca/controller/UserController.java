@@ -7,16 +7,11 @@ import com.br.biblioteca.dto.user.UserUpdateDTO;
 import com.br.biblioteca.entity.UserEntity;
 import com.br.biblioteca.service.UserService;
 import lombok.AllArgsConstructor;
-
-import org.apache.catalina.User;
-import org.apache.logging.log4j.message.StringFormattedMessage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
