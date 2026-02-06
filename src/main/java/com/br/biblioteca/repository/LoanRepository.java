@@ -31,6 +31,7 @@ public interface LoanRepository extends JpaRepository<LoanEntity, String> {
             WHERE (:#{#dto.userId} IS NULL OR l.user.id = :#{#dto.userId})
             AND (:#{#dto.portfolioId} IS NULL OR l.portfolio.id = :#{#dto.portfolioId})
             AND (:#{#dto.bookId} IS NULL OR l.portfolio.book.isbn = :#{#dto.bookId})
+            AND l.returnAt IS NULL
             ORDER BY l.startAt DESC
             """)
     List<LoanSummaryDTO> findByResume(LoanFilterDTO dto, Pageable pageable);
@@ -39,11 +40,11 @@ public interface LoanRepository extends JpaRepository<LoanEntity, String> {
             """
         SELECT COUNT(1) > 0
         FROM LoanEntity l
-        WHERE l.portfolio.id = :portifolioId
+        WHERE l.portfolio.id = :portfolioId
         AND l.returnAt IS NULL
         """
     )
-    boolean existsActiveLoanByPortfolioId(String portfolioId);
+    boolean existsActiveLoanByPortfolioId(@Param("portfolioId") String portfolioId);
 
     @Query("""
             SELECT l FROM LoanEntity l
@@ -74,5 +75,16 @@ public interface LoanRepository extends JpaRepository<LoanEntity, String> {
     Optional<LoanResponseDTO> findProjectionById(
             @Param("loanId") String loanId
     );
+
+
+    @Query(
+            """
+    SELECT COUNT(1) > 0
+        FROM LoanEntity l
+        WHERE l.user.id = :userId
+        AND l.returnAt is null 
+        """
+    )
+    boolean existsByUserId(String userId);
 
 }

@@ -40,15 +40,11 @@ public class LoanService {
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
 
         if (!Boolean.TRUE.equals(portfolio.getActive())) {
-            throw new IllegalArgumentException("Não pode cadastrar um empréstimo para um livro inativo.");
+            throw new IllegalArgumentException("Item do portfólio inativo não pode ser emprestado.");
         }
 
         if (!Boolean.TRUE.equals(user.getActive())) {
             throw new IllegalArgumentException("Não pode cadastrar um empréstimo para um usuário inativo.");
-        }
-
-        if (!user.getActive()) {
-            throw new IllegalStateException("Usuário inativo não pode realizar empréstimos");
         }
 
         repository.findActiveByPortfolioId(dto.getPortfolioId())

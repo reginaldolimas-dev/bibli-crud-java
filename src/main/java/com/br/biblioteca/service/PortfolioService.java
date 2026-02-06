@@ -61,7 +61,7 @@ public class PortfolioService {
         boolean existsActiveLoan = loanRepository.existsActiveLoanByPortfolioId(portfolio.getId());
 
         if  (existsActiveLoan) {
-            throw new IllegalArgumentException("Não pode inativar um portfolio que esta emprestado.");
+            throw new IllegalArgumentException("Operação não permitida: o portfólio possui empréstimo ativo.");
         }
 
         portfolio.setActive(false);

@@ -6,6 +6,7 @@ import com.br.biblioteca.dto.BookUpdateDTO;
 import com.br.biblioteca.dto.projection.BookSummaryDTO;
 import com.br.biblioteca.entity.BookEntity;
 import com.br.biblioteca.repository.BookRepository;
+import com.br.biblioteca.repository.PortfolioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 public class BookService {
     private final BookRepository repository;
+    private final PortfolioRepository portfolioService;
 
     public Page<BookSummaryDTO> pesquisarPaginado(BookFilterDTO dto, Pageable pageable) {
         List<BookSummaryDTO> modelos = repository.findByResume(dto, pageable);
@@ -48,6 +50,10 @@ public class BookService {
     public void deletar(String isbn) {
         BookEntity book = repository.findById(isbn)
                 .orElseThrow(() -> new EntityNotFoundException("Livro não encontrado"));
+
+        if(portfolioService.existsByBookIsbn(book.getIsbn())) {
+            throw new IllegalArgumentException("Livro possui portfolios ativos e não pode ser inativado");
+        }
 
         book.setActive(false);
         book.setInactivedAt(LocalDateTime.now());

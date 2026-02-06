@@ -25,4 +25,15 @@ public interface PortfolioRepository extends JpaRepository<PortfolioEntity, Stri
             AND p.active = true
             """)
     List<PortfolioSummaryDTO> findByResume(PortfolioFilterDTO dto, Pageable pageable);
+
+    @Query(
+            """
+    SELECT COUNT(1) > 0
+        FROM PortfolioEntity p
+        WHERE p.book.isbn = :bookIsbn
+        AND p.active = true
+        """
+    )
+    boolean existsByBookIsbn(String bookIsbn);
+
 }

@@ -1,8 +1,10 @@
 package com.br.biblioteca.controller;
 
-import com.br.biblioteca.dto.*;
+import com.br.biblioteca.dto.LoanCreateDTO;
+import com.br.biblioteca.dto.LoanFilterDTO;
+import com.br.biblioteca.dto.LoanResponseDTO;
+import com.br.biblioteca.dto.LoanReturnDTO;
 import com.br.biblioteca.dto.projection.LoanSummaryDTO;
-import com.br.biblioteca.entity.LoanEntity;
 import com.br.biblioteca.service.LoanService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
