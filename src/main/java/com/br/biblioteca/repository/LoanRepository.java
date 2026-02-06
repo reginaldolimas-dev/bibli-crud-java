@@ -28,20 +28,9 @@ public interface LoanRepository extends JpaRepository<LoanEntity, String> {
                    l.loanCondition AS loanCondition,
                    l.returnCondition AS returnCondition
             FROM LoanEntity l
-            WHERE (:#{#dto.id} IS NULL OR l.id = :#{#dto.id})
+            WHERE (:#{#dto.userId} IS NULL OR l.user.id = :#{#dto.userId})
             AND (:#{#dto.portfolioId} IS NULL OR l.portfolio.id = :#{#dto.portfolioId})
-            AND (:#{#dto.userId} IS NULL OR l.user.id = :#{#dto.userId})
-            AND (:#{#dto.userName} IS NULL OR LOWER(l.user.name) LIKE LOWER(CONCAT('%', :#{#dto.userName}, '%')))
-            AND (:#{#dto.bookTitle} IS NULL OR LOWER(l.portfolio.book.title) LIKE LOWER(CONCAT('%', :#{#dto.bookTitle}, '%')))
-            AND (:#{#dto.startAtInicio} IS NULL OR l.startAt >= :#{#dto.startAtInicio})
-            AND (:#{#dto.startAtFim} IS NULL OR l.startAt <= :#{#dto.startAtFim})
-            AND (:#{#dto.devolvido} IS NULL OR 
-                 (:#{#dto.devolvido} = true AND l.returnAt IS NOT NULL) OR 
-                 (:#{#dto.devolvido} = false AND l.returnAt IS NULL))
-            AND (:#{#dto.atrasado} IS NULL OR 
-                 (:#{#dto.atrasado} = true AND l.returnAt IS NULL AND FUNCTION('DATE_ADD', l.startAt, l.period, 'DAY') < CURRENT_TIMESTAMP))
-            AND (:#{#dto.loanCondition} IS NULL OR l.loanCondition = :#{#dto.loanCondition})
-            AND (:#{#dto.returnCondition} IS NULL OR l.returnCondition = :#{#dto.returnCondition})
+            AND (:#{#dto.bookId} IS NULL OR l.portfolio.book.isbn = :#{#dto.bookId})
             ORDER BY l.startAt DESC
             """)
     List<LoanSummaryDTO> findByResume(LoanFilterDTO dto, Pageable pageable);

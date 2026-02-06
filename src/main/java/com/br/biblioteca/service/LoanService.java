@@ -74,26 +74,7 @@ public class LoanService {
     }
 
     @Transactional
-    public void atualizar(String id, LoanUpdateDTO dto) {
-        LoanEntity loan = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Empréstimo não encontrado"));
-
-        if (loan.getReturnAt() != null) {
-            throw new IllegalStateException("Não é possível atualizar um empréstimo já devolvido");
-        }
-
-        if (dto.getPeriod() != null) {
-            if (dto.getPeriod() < 1 || dto.getPeriod() > 365) {
-                throw new IllegalArgumentException("O período deve estar entre 1 e 365 dias");
-            }
-            loan.setPeriod(dto.getPeriod());
-        }
-
-        repository.save(loan);
-    }
-
-    @Transactional
-    public LoanEntity devolver(String id, LoanReturnDTO dto) {
+    public LoanResponseDTO devolver(String id, LoanReturnDTO dto) {
         LoanEntity loan = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Empréstimo não encontrado"));
 
@@ -104,30 +85,14 @@ public class LoanService {
         loan.setReturnAt(LocalDateTime.now());
         loan.setReturnCondition(dto.getReturnCondition());
 
-        // Atualiza a condição do item no portfólio se houver degradação
         if (dto.getReturnCondition() != null) {
             loan.getPortfolio().setCondition(dto.getReturnCondition());
             portfolioRepository.save(loan.getPortfolio());
         }
 
-        return repository.save(loan);
-    }
+        LoanEntity loanSaved = repository.save(loan);
 
-    @Transactional
-    public LoanEntity renovar(String id, Integer novosPeriodoDias) {
-        LoanEntity loan = repository.findById(id)
+        return repository.findProjectionById(loanSaved.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Empréstimo não encontrado"));
-
-        if (loan.getReturnAt() != null) {
-            throw new IllegalStateException("Não é possível renovar um empréstimo já devolvido");
-        }
-
-        if (novosPeriodoDias == null || novosPeriodoDias < 1 || novosPeriodoDias > 90) {
-            throw new IllegalArgumentException("O período de renovação deve estar entre 1 e 90 dias");
-        }
-
-        loan.setPeriod(loan.getPeriod() + novosPeriodoDias);
-
-        return repository.save(loan);
     }
 }

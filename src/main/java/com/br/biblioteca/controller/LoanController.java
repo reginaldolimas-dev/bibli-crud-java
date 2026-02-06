@@ -29,12 +29,6 @@ public class LoanController {
                 .body(service.cadastrar(dto));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> atualizar(@PathVariable String id, @RequestBody LoanUpdateDTO dto) {
-        service.atualizar(id, dto);
-        return ResponseEntity.ok().build();
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable String id) {
         service.deletar(id);
@@ -42,17 +36,9 @@ public class LoanController {
     }
 
     @PostMapping("/{id}/devolver")
-    public ResponseEntity<LoanEntity> devolver(
+    public ResponseEntity<LoanResponseDTO> devolver(
             @PathVariable String id,
             @RequestBody LoanReturnDTO dto) {
         return ResponseEntity.ok(service.devolver(id, dto));
     }
-
-    @PostMapping("/{id}/renovar")
-    public ResponseEntity<LoanEntity> renovar(
-            @PathVariable String id,
-            @RequestParam Integer periodoEmDias) {
-        return ResponseEntity.ok(service.renovar(id, periodoEmDias));
-    }
-
 }
