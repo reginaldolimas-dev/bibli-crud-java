@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
@@ -33,13 +35,15 @@ public class LoanEntity extends BaseEntity {
     private LocalDateTime returnAt;
 
     @Column(name = "period", nullable = false)
-    private Integer period = 30; // dias
+    private Integer period = 30;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "loan_condition")
     private ConditionEnum loanCondition;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "return_condition")
     private ConditionEnum returnCondition;
 

@@ -4,10 +4,12 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
+import lombok.Getter;
 
 import java.util.UUID;
 
 @MappedSuperclass
+@Getter
 public abstract class BaseEntity {
     @Id
     @Column(length = 26, nullable = false, updatable = false)
