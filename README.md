@@ -1,6 +1,6 @@
 # Biblioteca (bibli-crud-java)
 
-Este repositório contém uma API backend em Java (Spring Boot) para gerenciamento de uma pequena biblioteca (books, users, loans, portfolio). Este README descreve como configurar e executar o projeto localmente, incluindo um docker-compose para subir o banco de dados PostgreSQL.
+Este repositório contém uma API backend em Java (Spring Boot) para gerenciamento de uma pequena biblioteca (books, users, loans, portfolio). Este README descreve como configurar e executar o projeto localmente, incluindo Docker e Docker Compose para subir a aplicação completa com banco de dados PostgreSQL.
 
 ---
 
@@ -8,13 +8,10 @@ Este repositório contém uma API backend em Java (Spring Boot) para gerenciamen
 
 - Visão geral
 - Pré-requisitos
-- Subir o banco com Docker Compose
-- Configuração da aplicação (application.properties)
-- Rodando a aplicação
-- Rodando os testes
-- Migrações (Flyway)
-- Observações sobre Windows / WSL
-- Contato / próximos passos
+- Como executar com Docker Compose
+- Endpoints disponíveis
+- Troubleshooting
+- Recursos adicionais
 
 ---
 
@@ -26,117 +23,212 @@ Projeto Spring Boot com JPA, Flyway e PostgreSQL. A arquitetura segue camadas: c
 
 ## Pré-requisitos
 
-- Java (JDK) instalado (versão compatível conforme projeto; o pom indica Java 21). Verifique com:
+- **Docker Desktop** (Windows/Mac) ou Docker Engine (Linux) — Docker deve estar em execução
+- **Docker Compose** (geralmente incluído no Docker Desktop)
 
+Verifique se o Docker está instalado:
 ```bash
-java -version
+docker --version
+docker compose --version
 ```
-
-- Maven (ou use o wrapper incluído `./mvnw` / `mvnw.cmd`).
-- Docker Desktop (para rodar o PostgreSQL via Docker Compose) — Docker deve estar ativo.
 
 ---
 
-## Subir o banco com Docker Compose
+## Como executar com Docker Compose
 
-Um arquivo `docker-compose.yml` foi adicionado na raiz do projeto para subir um container PostgreSQL:
+Esta é a forma mais simples de executar a aplicação completa, incluindo banco de dados e aplicação em containers.
 
-- Serviço: `db` (imagem: `postgres:13.10-alpine`)
-- Banco: `sapmetabase`
+### Arquitetura do Docker Compose
+
+O arquivo `docker-compose.yml` define dois serviços:
+
+**Serviço `db` (PostgreSQL)**
+- Imagem: `postgres:13.10-alpine`
+- Banco de dados: `library`
 - Usuário: `postgres`
 - Senha: `q1w2e3r4`
-- Porta exposta: `5432`
+- Porta: `5432`
+- Healthcheck: verifica se PostgreSQL está pronto antes de iniciar a aplicação
 
-Comandos para subir o banco (na raiz do projeto):
+**Serviço `app` (Aplicação Spring Boot)**
+- Constrói a imagem a partir do `Dockerfile`
+- Porta: `9090`
+- Depende do serviço `db` (aguarda o healthcheck)
+- Variáveis de ambiente configuradas para conectar ao banco via hostname `db`
+- Reinicia automaticamente em caso de falha
+
+### Como executar
+
+1. **Subir todos os serviços** (na raiz do projeto):
 
 ```bash
-# sobe o Postgres em background
+docker compose up
+```
+
+Ou em background:
+```bash
 docker compose up -d
+```
 
-# checa status dos serviços
+2. **Verificar status**:
+
+```bash
 docker compose ps
+```
 
-# acompanhar logs do serviço db
+3. **Ver logs da aplicação**:
+
+```bash
+docker compose logs -f app
+```
+
+4. **Ver logs do banco**:
+
+```bash
 docker compose logs -f db
 ```
 
-Comandos úteis para inspecionar o container:
+5. **Acessar a aplicação**:
+- API: http://localhost:9090
+- Swagger UI: http://localhost:9090/swagger-ui/index.html
+
+6. **Parar os serviços**:
 
 ```bash
-# abrir shell no container
-docker exec -it library sh
-# dentro do container usar psql
-psql -U postgres -d sapmetabase -c '\l'
+docker compose down
 ```
 
-Caso prefira não deixar credenciais no `docker-compose.yml`, use um arquivo `.env` e referencie variáveis no compose (ex.: `${POSTGRES_PASSWORD}`).
+7. **Limpar tudo incluindo volumes** (remove dados do banco):
+
+```bash
+docker compose down -v
+```
+
+---
+
+## Entendendo o Dockerfile
+
+O `Dockerfile` utiliza **multi-stage build** para otimizar o tamanho da imagem:
+
+**Stage 1: Build**
+```dockerfile
+FROM maven:3.9.8-eclipse-temurin-21 AS build
+```
+- Usa imagem com Maven + JDK 21
+- Copia `pom.xml` e código fonte
+- Executa `mvn package` para gerar o JAR (pula testes com `-DskipTests`)
+
+**Stage 2: Runtime**
+```dockerfile
+FROM eclipse-temurin:21-jre
+```
+- Usa imagem JRE (apenas runtime, sem Maven)
+- Copia o JAR da stage anterior
+- Expõe porta `9090`
+- Executa a aplicação com `java -jar`
+
+**Benefício**: A imagem final contém apenas o necessário para rodar a aplicação, reduzindo significativamente o tamanho.
 
 ---
 
 ## Configuração da aplicação (`application.properties`)
 
-No `src/main/resources/application.properties` configure a datasource para apontar ao container:
+O arquivo está localizado em `src/main/resources/application.properties`.
 
-- Se você rodar a aplicação na sua máquina (host) e o Postgres no Docker Desktop no mesmo host:
-
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/sapmetabase
-spring.datasource.username=postgres
-spring.datasource.password=q1w2e3r4
-```
-
-- Se você rodar a aplicação também via Docker (no mesmo `docker-compose`), altere a URL para usar o nome do serviço `db`:
+Ao executar com Docker Compose, a aplicação se conecta ao banco de dados usando o hostname `db` (resolvido automaticamente pela rede Docker):
 
 ```properties
 spring.datasource.url=jdbc:postgresql://db:5432/library
+spring.datasource.username=postgres
+spring.datasource.password=q1w2e3r4
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=false
+spring.flyway.enabled=true
+server.port=9090
 ```
 
-Outras propriedades úteis (exemplo):
+### Opções úteis para `ddl-auto`:
+
+- `validate` — apenas valida o schema (recomendado em produção)
+- `update` — atualiza o schema automaticamente
+- `create` — cria do zero (destrói dados existentes)
+- `create-drop` — cria na inicialização e destrói ao desligar
+- `none` — desabilita DDL automático
+
+---
+
+## Endpoints disponíveis
+
+A aplicação expõe endpoints RESTful para gerenciar:
+
+### Books (Livros)
+- `GET /books` — Listar livros com filtros e paginação
+- `POST /books` — Criar novo livro
+- `PUT /books/{isbn}` — Atualizar livro
+- `DELETE /books/{isbn}` — Deletar livro
+
+### Users (Usuários)
+- `GET /users` — Listar usuários
+- `POST /users` — Criar novo usuário
+- `PUT /users/{id}` — Atualizar usuário
+- `DELETE /users/{id}` — Deletar usuário
+
+### Loans (Empréstimos)
+- `GET /loans` — Listar empréstimos
+- `POST /loans` — Criar empréstimo
+- `PUT /loans/{id}` — Atualizar empréstimo
+- `DELETE /loans/{id}` — Deletar empréstimo
+
+### Portfolio (Acervo)
+- `GET /portfolio` — Listar portfolio
+- `POST /portfolio` — Adicionar ao portfolio
+- `PUT /portfolio/{id}` — Atualizar portfolio
+- `DELETE /portfolio/{id}` — Remover do portfolio
+
+**Documentação interativa**: Acesse http://localhost:9090/swagger-ui/index.html para ver e testar todos os endpoints.
+
+---
+
+## Troubleshooting
+
+### Container do banco não inicia
+
+```bash
+# Verificar logs
+docker compose logs db
+
+# Reiniciar o serviço
+docker compose restart db
+```
+
+### Aplicação não consegue conectar ao banco
+
+- Verifique se o healthcheck do `db` passou: `docker compose ps`
+- Confirme que a URL JDBC está correta no `application.properties`
+- Se executando localmente: `jdbc:postgresql://localhost:5432/library`
+- Se via Docker Compose: `jdbc:postgresql://db:5432/library`
+
+### Porta 9090 já em uso
+
+Altere a porta no `application.properties`:
 
 ```properties
-spring.jpa.hibernate.ddl-auto=validate
-spring.jpa.show-sql=true
-spring.flyway.enabled=true
+server.port=8080
 ```
 
-Observação: ajuste `ddl-auto` conforme sua necessidade (`none`, `validate`, `update`, `create`, `create-drop`).
+Ou no `docker-compose.yml`:
+
+```yaml
+ports:
+  - "8080:9090"
+```
 
 ---
 
-## Rodando a aplicação
+## Recursos adicionais
 
-Build e execução local com o Maven Wrapper:
-
-```bash
-# compila o projeto (pula testes para rapidez)
-./mvnw package -DskipTests
-
-# roda a aplicação
-./mvnw spring-boot:run
-```
-
-Ou execute o JAR gerado:
-
-```bash
-java -jar target/biblioteca-0.0.1-SNAPSHOT.jar
-```
-
-Se o banco estiver em um container Docker, primeiro espere o healthcheck do container ficar OK (`docker compose ps` ou `docker compose logs -f db`) antes de iniciar a aplicação.
-
-## Acessos
-
-Após subir a aplicação localmente (porta padrão 9090 neste projeto), os endpoints podem ser acessados em:
-
-- API: http://localhost:9090
-- Swagger UI: http://localhost:9090/swagger-ui/index.html
-
-(Se você mudou a porta no `application.properties`, ajuste os links acima de acordo.)
-
----
-
-## Migrações (Flyway)
-
-O projeto inclui Flyway. As migrations SQL estão em `src/main/resources/db/migration`. Flyway será executado automaticamente na inicialização se estiver habilitado via `spring.flyway.enabled=true`.
-
----
-
+- [Spring Boot Documentation](https://spring.io/projects/spring-boot)
+- [Spring Data JPA](https://spring.io/projects/spring-data-jpa)
+- [Flyway Documentation](https://flywaydb.org/)
+- [Docker Documentation](https://docs.docker.com/)
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
