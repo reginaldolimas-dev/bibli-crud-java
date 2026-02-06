@@ -6,6 +6,7 @@ import com.br.biblioteca.dto.LoanResponseDTO;
 import com.br.biblioteca.dto.LoanReturnDTO;
 import com.br.biblioteca.dto.projection.LoanSummaryDTO;
 import com.br.biblioteca.service.LoanService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +27,7 @@ public class LoanController {
     }
 
     @PostMapping
-    public ResponseEntity<LoanResponseDTO> cadastrar(@RequestBody LoanCreateDTO dto) {
+    public ResponseEntity<LoanResponseDTO> cadastrar(@RequestBody @Valid LoanCreateDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(service.cadastrar(dto));
     }

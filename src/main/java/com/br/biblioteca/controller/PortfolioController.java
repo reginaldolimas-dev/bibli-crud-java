@@ -34,7 +34,7 @@ public class PortfolioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> atualizar(@PathVariable String id, @RequestBody @Valid PortfolioUpdateDTO dto) {
+    public ResponseEntity<Void> atualizar(@PathVariable String id, @RequestBody PortfolioUpdateDTO dto) {
         service.atualizar(id, dto);
         return ResponseEntity.ok().build();
     }

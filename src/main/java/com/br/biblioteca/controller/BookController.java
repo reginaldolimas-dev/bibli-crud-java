@@ -6,6 +6,7 @@ import com.br.biblioteca.dto.BookUpdateDTO;
 import com.br.biblioteca.dto.projection.BookSummaryDTO;
 import com.br.biblioteca.entity.BookEntity;
 import com.br.biblioteca.service.BookService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,7 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<BookEntity> cadastrar(@RequestBody BookCreateDTO dto) {
+    public ResponseEntity<BookEntity> cadastrar(@RequestBody @Valid BookCreateDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(service.cadastrar(dto));
     }

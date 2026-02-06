@@ -6,6 +6,7 @@ import com.br.biblioteca.dto.user.UserFilterDTO;
 import com.br.biblioteca.dto.user.UserUpdateDTO;
 import com.br.biblioteca.entity.UserEntity;
 import com.br.biblioteca.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +27,7 @@ public class UserController {
     }
     
     @PostMapping
-    public ResponseEntity<UserEntity> cadastrar(@RequestBody UserCreateDTO dto) {
+    public ResponseEntity<UserEntity> cadastrar(@RequestBody @Valid UserCreateDTO dto) {
     	return ResponseEntity.status(HttpStatus.CREATED)
     			.body(service.cadastrar(dto));
     }
