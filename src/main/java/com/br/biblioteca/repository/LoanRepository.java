@@ -35,6 +35,16 @@ public interface LoanRepository extends JpaRepository<LoanEntity, String> {
             """)
     List<LoanSummaryDTO> findByResume(LoanFilterDTO dto, Pageable pageable);
 
+    @Query(
+            """
+        SELECT COUNT(1) > 0
+        FROM LoanEntity l
+        WHERE l.portfolio.id = :portifolioId
+        AND l.returnAt IS NULL
+        """
+    )
+    boolean existsActiveLoanByPortfolioId(String portfolioId);
+
     @Query("""
             SELECT l FROM LoanEntity l
             LEFT JOIN FETCH l.portfolio p

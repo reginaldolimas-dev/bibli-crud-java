@@ -1,12 +1,16 @@
 package com.br.biblioteca.service;
 
+import com.br.biblioteca.dto.LoanFilterDTO;
 import com.br.biblioteca.dto.PortfolioCreateDTO;
 import com.br.biblioteca.dto.PortfolioFilterDTO;
 import com.br.biblioteca.dto.PortfolioUpdateDTO;
+import com.br.biblioteca.dto.projection.LoanSummaryDTO;
 import com.br.biblioteca.dto.projection.PortfolioSummaryDTO;
 import com.br.biblioteca.entity.BookEntity;
+import com.br.biblioteca.entity.LoanEntity;
 import com.br.biblioteca.entity.PortfolioEntity;
 import com.br.biblioteca.repository.BookRepository;
+import com.br.biblioteca.repository.LoanRepository;
 import com.br.biblioteca.repository.PortfolioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -26,6 +30,7 @@ public class PortfolioService {
 
     private final PortfolioRepository repository;
     private final BookRepository bookRepository;
+    private final LoanRepository loanRepository;
 
     public Page<PortfolioSummaryDTO> pesquisarPaginado(PortfolioFilterDTO dto, Pageable pageable) {
         List<PortfolioSummaryDTO> modelos = repository.findByResume(dto, pageable);
@@ -36,6 +41,10 @@ public class PortfolioService {
         BookEntity book = bookRepository.findById(dto.getBookIsbn())
                 .orElseThrow(() -> new EntityNotFoundException("Livro não encontrado"));
 
+        if (!Boolean.TRUE.equals(book.getActive())) {
+            throw new IllegalArgumentException("Não pode cadastrar um portfolio para um livro inativo.");
+        }
+
         PortfolioEntity portfolio = new PortfolioEntity();
         portfolio.setId(generateId());
         portfolio.setBook(book);
@@ -45,9 +54,15 @@ public class PortfolioService {
         return repository.save(portfolio);
     }
 
-    public void deletar(String id) {
+    public void inativar(String id) {
         PortfolioEntity portfolio = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Item do portfólio não encontrado"));
+
+        boolean existsActiveLoan = loanRepository.existsActiveLoanByPortfolioId(portfolio.getId());
+
+        if  (existsActiveLoan) {
+            throw new IllegalArgumentException("Não pode inativar um portfolio que esta emprestado.");
+        }
 
         portfolio.setActive(false);
         portfolio.setInactivedAt(LocalDateTime.now());
@@ -70,7 +85,6 @@ public class PortfolioService {
     }
 
     private String generateId() {
-        // Gera um ID de 26 caracteres (ULID-like ou UUID sem hífens + padding)
         return UUID.randomUUID().toString().replace("-", "").substring(0, 26);
     }
 

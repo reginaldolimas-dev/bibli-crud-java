@@ -7,6 +7,6 @@ import lombok.Value;
 public class LoanCreateDTO {
     String portfolioId;
     String userId;
-    Integer period; // Período em dias (padrão 30)
+    Integer period;
     ConditionEnum loanCondition;
 }

@@ -29,12 +29,6 @@ public class LoanController {
                 .body(service.cadastrar(dto));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable String id) {
-        service.deletar(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @PostMapping("/{id}/devolver")
     public ResponseEntity<LoanResponseDTO> devolver(
             @PathVariable String id,

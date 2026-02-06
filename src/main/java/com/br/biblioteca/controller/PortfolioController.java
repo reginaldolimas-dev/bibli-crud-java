@@ -40,8 +40,8 @@ public class PortfolioController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable String id) {
-        service.deletar(id);
+    public ResponseEntity<Void> inativar(@PathVariable String id) {
+        service.inativar(id);
         return ResponseEntity.noContent().build();
     }
 

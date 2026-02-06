@@ -22,6 +22,7 @@ public interface PortfolioRepository extends JpaRepository<PortfolioEntity, Stri
             FROM PortfolioEntity p
             WHERE (:#{#dto.id} IS NULL OR p.id = :#{#dto.id})
             AND (:#{#dto.bookIsbn} IS NULL OR p.book.isbn = :#{#dto.bookIsbn})
+            AND p.active = true
             """)
     List<PortfolioSummaryDTO> findByResume(PortfolioFilterDTO dto, Pageable pageable);
 }

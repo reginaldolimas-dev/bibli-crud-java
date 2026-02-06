@@ -39,6 +39,14 @@ public class LoanService {
         UserEntity user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
 
+        if (!Boolean.TRUE.equals(portfolio.getActive())) {
+            throw new IllegalArgumentException("Não pode cadastrar um empréstimo para um livro inativo.");
+        }
+
+        if (!Boolean.TRUE.equals(user.getActive())) {
+            throw new IllegalArgumentException("Não pode cadastrar um empréstimo para um usuário inativo.");
+        }
+
         if (!user.getActive()) {
             throw new IllegalStateException("Usuário inativo não pode realizar empréstimos");
         }
@@ -59,18 +67,6 @@ public class LoanService {
 
         return repository.findProjectionById(loan.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Empréstimo não encontrado"));
-    }
-
-    @Transactional
-    public void deletar(String id) {
-        LoanEntity loan = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Empréstimo não encontrado"));
-
-        if (loan.getReturnAt() != null) {
-            throw new IllegalStateException("Não é possível deletar um empréstimo já devolvido");
-        }
-
-        repository.delete(loan);
     }
 
     @Transactional

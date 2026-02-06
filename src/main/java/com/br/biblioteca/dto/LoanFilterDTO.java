@@ -1,13 +1,11 @@
 package com.br.biblioteca.dto;
 
-import lombok.Value;
+import lombok.Data;
 
-import java.time.LocalDateTime;
-
-@Value
+@Data
 public class LoanFilterDTO {
 
-    String userId;
-    String portfolioId;
-    String bookId;
+    private String userId;
+    private String portfolioId;
+    private String bookId;
 }
