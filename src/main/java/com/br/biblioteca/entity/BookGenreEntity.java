@@ -2,6 +2,7 @@ package com.br.biblioteca.entity;
 
 import com.br.biblioteca.enums.GenreEnum;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -12,7 +13,9 @@ import lombok.ToString;
 })
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class BookGenreEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,8 +30,4 @@ public class BookGenreEntity {
     @Column(name = "genre", nullable = false)
     private GenreEnum genre;
 
-    public BookGenreEntity(BookEntity book, GenreEnum genre) {
-        this.book = book;
-        this.genre = genre;
-    }
 }

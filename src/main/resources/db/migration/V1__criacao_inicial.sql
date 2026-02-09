@@ -30,7 +30,7 @@ CREATE TYPE "book"."genre" AS ENUM (
 );
 
 CREATE TABLE "users" (
-                         "id" char(26) PRIMARY KEY,
+                         "id" varchar(26) PRIMARY KEY,
                          "name" varchar(256) NOT NULL,
                          "email" varchar(512) NOT NULL,
                          "created_at" timestamp DEFAULT now(),
@@ -39,7 +39,7 @@ CREATE TABLE "users" (
 );
 
 CREATE TABLE "books" (
-                         "isbn" char(13) PRIMARY KEY,
+                         "isbn" varchar(13) PRIMARY KEY,
                          "title" varchar(512) NOT NULL,
                          "release_year" int NOT NULL,
                          "summary" text,
@@ -51,13 +51,17 @@ CREATE TABLE "books" (
 );
 
 CREATE TABLE "genre" (
-                         "book_id" char(13),
-                         "genre" book.genre NOT NULL
+                         "id" bigserial,
+                         "book_id" varchar(13),
+                         "genre" book.genre NOT NULL,
+                         CONSTRAINT uk_genre_book_genre UNIQUE (book_id, genre),
+                         CONSTRAINT genre_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.books(isbn) ON DELETE CASCADE
+
 );
 
 CREATE TABLE "portfolio" (
-                             "id" char(26) PRIMARY KEY,
-                             "book_id" char(13) NOT NULL,
+                             "id" varchar(26) PRIMARY KEY,
+                             "book_id" varchar(13) NOT NULL,
                              "condition" book.condition,
                              "cover" book.cover,
                              "inactived_at" timestamp DEFAULT null,
@@ -65,9 +69,9 @@ CREATE TABLE "portfolio" (
 );
 
 CREATE TABLE "loan" (
-                        "id" char(26) PRIMARY KEY,
-                        "portfolio_id" char(26) NOT NULL,
-                        "user_id" char(26) NOT NULL,
+                        "id" varchar(26) PRIMARY KEY,
+                        "portfolio_id" varchar(26) NOT NULL,
+                        "user_id" varchar(26) NOT NULL,
                         "start_at" timestamp NOT NULL DEFAULT now(),
                         "return_at" timestamp DEFAULT null,
                         "period" int NOT NULL DEFAULT 30,

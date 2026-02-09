@@ -1,36 +1,30 @@
 package com.br.biblioteca.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum GenreEnum {
-    ADVENTURE("adventure"),
-    ROMANCE("romance"),
-    FANTASY("fantasy"),
-    SCI_FI("sci_fi"),
-    HISTORY("history"),
-    HORROR("horror"),
-    DISTOPIAN("distopian"),
-    BIOGRAPHY("biography"),
-    SELF_HELP("self_help"),
-    MEMORY("memory"),
-    TRUE_CRIME("true_crime"),
-    POETRY("poetry"),
-    GRAPHIC_NOVEL("graphic_novel");
+    ADVENTURE,
+    ROMANCE,
+    FANTASY,
+    SCI_FI,
+    HISTORY,
+    HORROR,
+    DISTOPIAN,
+    BIOGRAPHY,
+    SELF_HELP,
+    MEMORY,
+    TRUE_CRIME,
+    POETRY,
+    GRAPHIC_NOVEL;
 
-    private final String value;
-
-    GenreEnum(String value) {
-        this.value = value;
-    }
-
+    @JsonValue
     public String getValue() {
-        return value;
+        return this.name().toLowerCase();
     }
 
+    @JsonCreator
     public static GenreEnum fromValue(String value) {
-        for (GenreEnum genre : GenreEnum.values()) {
-            if (genre.value.equals(value)) {
-                return genre;
-            }
-        }
-        throw new IllegalArgumentException("Valor inválido para Genre: " + value);
+        return GenreEnum.valueOf(value.toUpperCase());
     }
 }
