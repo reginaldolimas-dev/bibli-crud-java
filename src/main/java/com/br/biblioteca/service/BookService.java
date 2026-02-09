@@ -24,7 +24,10 @@ public class BookService {
     private final PortfolioRepository portfolioService;
 
     public Page<BookSummaryDTO> pesquisarPaginado(BookFilterDTO dto, Pageable pageable) {
-        List<BookSummaryDTO> modelos = repository.findByResume(dto, pageable);
+        List<BookSummaryDTO> modelos = repository.findByResumeQueryNative(dto.getIsbn(),
+                                                                          dto.getTitle(),
+                                                                          dto.getAuthor(),
+                                                                          pageable);
         return new PageImpl<>(modelos, pageable, modelos.size());
     }
 
